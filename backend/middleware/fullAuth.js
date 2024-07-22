@@ -16,7 +16,6 @@ const authenticateUser = (req, res, next) => {
   } catch (error) {
     throw new UnauthenticatedError("Invalid token");
   }
-  next();
 };
 
 const authorizeRoles = (...roles) => {

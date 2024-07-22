@@ -6,8 +6,10 @@ const app = express();
 app.use(express.json());
 
 // Routes
-const authRouter = require("./router/auth");
+const authRouter = require("./routes/auth");
+const imageUploadRouter = require("./routes/imageUpload");
 app.use("/api/auth", authRouter);
+app.use("/api/upload", imageUploadRouter);
 
 // Not Found Middleware
 const notFoundMiddleware = require("./middleware/notFound");
