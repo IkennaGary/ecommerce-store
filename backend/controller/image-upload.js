@@ -1,16 +1,20 @@
 const BadRequestError = require("../errors/bad-request");
 const { StatusCodes } = require("http-status-codes");
+const cloudinary = require("../helper/cloudinaryConfig");
 
-const uploadImage = (req, res) => {
-  if (req.file.filename) {
-    res
-      .status(StatusCodes.CREATED)
-      .json({ message: "Image uploaded successfully", url: req.file.filename });
-  } else {
+const uploadImage = async (req, res) => {
+  try {
+    const result = await cloudinary.uploader.upload(req.file.path);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "File uploaded successfully",
+      url: result.secure_url,
+    });
+  } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: "Error uploading image" });
-    throw new BadRequestError("No image provided");
+      .json({ success: false, message: "File upload failed" });
   }
 };
 

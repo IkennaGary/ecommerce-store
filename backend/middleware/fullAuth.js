@@ -2,6 +2,9 @@ const { isTokenValid } = require("../utils/jwt");
 const { UnauthorizedError, UnauthenticatedError } = require("../errors");
 
 const authenticateUser = (req, res, next) => {
+  if (!req.headers.authorization) {
+    throw new UnauthenticatedError("Access denied. No token provided");
+  }
   const token = req.headers.authorization.split(" ")[1];
   if (!token) {
     throw new UnauthenticatedError("Access denied. No token provided");
