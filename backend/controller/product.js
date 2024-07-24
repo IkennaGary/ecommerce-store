@@ -19,7 +19,7 @@ const addProduct = async (req, res) => {
     throw new BadRequestError("Invalid category");
   }
 
-  req.body.categoryId = categoryId;
+  // req.body.categoryId = categoryId;
 
   const existingProduct = await Product.findOne({
     where: { title: req.body.title, categoryId },
