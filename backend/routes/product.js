@@ -1,29 +1,29 @@
 const express = require("express");
-const {
-  addCategory,
-  getAllCategory,
-  getSingleCategory,
-  updateCategory,
-  deleteCategory,
-} = require("../controller/category");
 const { authenticateUser, authorizeRoles } = require("../middleware/fullAuth");
+const {
+  addProduct,
+  getAllProducts,
+  getProduct,
+  updateProduct,
+  deleteProduct,
+} = require("../controller/product");
 
 const router = express.Router();
 
-router.post("/", authenticateUser, authorizeRoles("admin"), addCategory);
-router.get("/", getAllCategory);
-router.get("/:id", getSingleCategory);
+router.post("/", authenticateUser, authorizeRoles("admin"), addProduct);
+router.get("/", getAllProducts);
+router.get("/:id", getProduct);
 router.put(
   "/update/:id",
   authenticateUser,
   authorizeRoles("admin"),
-  updateCategory
+  updateProduct
 );
 router.delete(
   "/delete/:id",
   authenticateUser,
   authorizeRoles("admin"),
-  deleteCategory
+  deleteProduct
 );
 
 module.exports = router;

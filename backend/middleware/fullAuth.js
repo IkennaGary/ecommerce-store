@@ -13,7 +13,11 @@ const authenticateUser = (req, res, next) => {
     if (token) {
       const decode = isTokenValid(token);
 
-      req.user = { id: decode.id, username: decode.username };
+      req.user = {
+        id: decode.id,
+        username: decode.username,
+        role: decode.role,
+      };
       next();
     }
   } catch (error) {

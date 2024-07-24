@@ -9,9 +9,12 @@ app.use(express.json());
 const authRouter = require("./routes/auth");
 const imageUploadRouter = require("./routes/imageUpload");
 const categoryRouter = require("./routes/category");
+const productRouter = require("./routes/product");
+
 app.use("/api/auth", authRouter);
 app.use("/api/upload", imageUploadRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/product", productRouter);
 
 // Not Found Middleware
 const notFoundMiddleware = require("./middleware/notFound");

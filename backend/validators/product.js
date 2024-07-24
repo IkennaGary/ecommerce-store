@@ -13,8 +13,7 @@ const createProductValidator = (body) => {
     stock: { type: "number", integer: true, min: 0 },
     tags: { type: "array", items: "string", optional: true },
     brand: { type: "string", min: 3, max: 255 },
-    sku: { type: "string", min: 1, max: 100 },
-    weight: { type: "number", positive: true },
+    weight: { type: "number", positive: true, optional: true },
     thumbnail: { type: "string", optional: false },
     images: { type: "array", items: "string", optional: true },
   };

@@ -1,9 +1,9 @@
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError } = require("../errors");
-const { Category } = require("../models");
+const { Category, Product } = require("../models");
 const { createCategoryValidator } = require("../validators/category");
 
-const createCategory = async (req, res) => {
+const addCategory = async (req, res) => {
   const { name, description, image } = req.body;
 
   if (!name || !description || !image) {
@@ -56,7 +56,9 @@ const getSingleCategory = async (req, res) => {
     throw new BadRequestError("id is required");
   }
   try {
-    const response = await Category.findByPk(id);
+    const response = await Category.findByPk(id, {
+      include: [{ model: Product, as: "products" }],
+    });
     if (!response) {
       throw new BadRequestError("Category not found");
     }
@@ -130,7 +132,7 @@ const deleteCategory = async (req, res) => {
 };
 
 module.exports = {
-  createCategory,
+  addCategory,
   getAllCategory,
   getSingleCategory,
   updateCategory,
