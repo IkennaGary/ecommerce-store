@@ -6,6 +6,12 @@ const {
   getProduct,
   updateProduct,
   deleteProduct,
+  getProductsByCategory,
+  getProductsByUser,
+  getRelatedProducts,
+  getTopRatedProducts,
+  getPopularProducts,
+  getProductsBySearch,
 } = require("../controller/product");
 
 const router = express.Router();
@@ -25,5 +31,11 @@ router.delete(
   authorizeRoles("admin"),
   deleteProduct
 );
+router.get("/category/:categoryId", getProductsByCategory);
+router.get("/user/:userId", getProductsByUser);
+router.get("/related/:id", getRelatedProducts);
+router.get("/top-rated", getTopRatedProducts);
+router.get("/popular", getPopularProducts);
+router.get("/search", getProductsBySearch);
 
 module.exports = router;

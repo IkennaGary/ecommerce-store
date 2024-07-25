@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError } = require("../errors");
 const { Product, Category, User } = require("../models");
+const ProductService = require("../services/ProductService");
 const { createProductValidator } = require("../validators/product");
 const { generateSku } = require("../utils/idGenerator");
 const pagination = require("../utils/pagination");
@@ -9,61 +10,52 @@ const addProduct = async (req, res) => {
   const sku = generateSku();
   const { id } = req.user;
 
-  req.body.sku = sku;
-  req.body.userId = id;
+  const data = req.body;
+  data.sku = sku;
+  data.userId = id;
 
-  const { id: categoryId } = await Category.findOne({
-    where: { name: req.body.category },
-  });
-  if (!categoryId) {
-    throw new BadRequestError("Invalid category");
-  }
-
-  // req.body.categoryId = categoryId;
-
-  const existingProduct = await Product.findOne({
-    where: { title: req.body.title, categoryId },
-  });
-
-  if (existingProduct) {
-    throw new BadRequestError("Product already exists in this category");
-  }
-
-  validatorResponse = createProductValidator(req.body);
+  validatorResponse = createProductValidator(data);
 
   if (validatorResponse !== true) {
     throw new BadRequestError(validatorResponse[0]?.message);
   }
-
-  const response = await Product.create(req.body);
-
-  res.status(StatusCodes.CREATED).json({ success: true, data: response });
+  try {
+    const response = await ProductService.addProduct(data);
+    res.status(StatusCodes.CREATED).json({ success: true, data: response });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
 };
-
 const getAllProducts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  let limit = parseInt(req.query.pageSize) || 10;
+  let limit = parseInt(req.query.limit) || 10;
   let sortBy = req.query.sortBy || "title";
   const sortDirection = req.query.sortDirection || "ASC";
+  const params = req.query;
 
-  const offset = (page - 1) * limit;
-  const order = [[sortBy, sortDirection]];
+  try {
+    const count = await ProductService.countRecords({});
 
-  const products = await Product.findAll({
-    limit,
-    offset,
-    order,
-    include: [
-      { model: Category, as: "category" },
-      { model: User, as: "user" },
-    ],
-  });
-  const count = await Product.count();
-  res.status(StatusCodes.OK).json({
-    success: true,
-    data: products,
-    meta: pagination(count, { limit, page, offset }),
-  });
+    const { products, pageParams } = await ProductService.getAllProducts(
+      page,
+      limit,
+      sortBy,
+      sortDirection,
+      params
+    );
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: products,
+      meta: pagination(count, pageParams),
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
 };
 
 const getProduct = async (req, res) => {
@@ -74,10 +66,9 @@ const getProduct = async (req, res) => {
   }
 
   try {
-    const response = await Product.findByPk(id);
-    if (!response) {
-      throw new BadRequestError("Product not found");
-    }
+    await ProductService.incrementPopularity(id);
+
+    const response = await ProductService.getProduct(id);
     res.status(StatusCodes.OK).json({ success: true, data: response });
   } catch (error) {
     res
@@ -89,38 +80,22 @@ const getProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   const { id } = req.params;
 
+  const data = req.body;
+
   if (!id) {
     throw new BadRequestError("id is required");
   }
 
+  validatorResponse = createProductValidator(data);
+
+  if (validatorResponse !== true) {
+    throw new BadRequestError(validatorResponse[0]?.message);
+  }
+
   try {
-    const { id: categoryId } = await Category.findOne({
-      where: { name: req.body.category },
-    });
+    const response = await ProductService.updateProduct(id, data);
 
-    if (!categoryId) {
-      throw new BadRequestError("Invalid category");
-    }
-
-    req.body.categoryId = categoryId;
-
-    const existingProduct = await Product.findByPk(id);
-
-    if (!existingProduct) {
-      throw new BadRequestError("Product not found in this category");
-    }
-
-    validatorResponse = createProductValidator(req.body);
-
-    if (validatorResponse !== true) {
-      throw new BadRequestError(validatorResponse[0]?.message);
-    }
-
-    await Product.update(req.body, { where: { id } });
-
-    res
-      .status(StatusCodes.OK)
-      .json({ success: true, message: "Product updated successfully" });
+    res.status(StatusCodes.OK).json({ success: true, message: response });
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -136,17 +111,158 @@ const deleteProduct = async (req, res) => {
   }
 
   try {
-    const response = await Product.findByPk(id);
+    const response = await ProductService.deleteProduct(id);
 
-    if (!response) {
+    res.status(StatusCodes.OK).json({ success: true, message: response });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+const getProductsByCategory = async (req, res) => {
+  const { categoryId } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  let sortBy = req.query.sortBy || "title";
+  const sortDirection = req.query.sortDirection || "ASC";
+  const params = req.query;
+
+  if (!categoryId) {
+    throw new BadRequestError("categoryId is required");
+  }
+
+  const count = await ProductService.countRecords({ categoryId: categoryId });
+
+  try {
+    const { products, pageParams } = await ProductService.getProductsByCategory(
+      categoryId,
+      page,
+      limit,
+      sortBy,
+      sortDirection,
+      params
+    );
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: products,
+      meta: pagination(count, pageParams),
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+const getProductsByUser = async (req, res) => {
+  const { id: userId } = req.user;
+  const page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  let sortBy = req.query.sortBy || "title";
+  const sortDirection = req.query.sortDirection || "ASC";
+  const params = req.query;
+
+  try {
+    const count = await ProductService.countRecords({ userId: userId });
+
+    const { products, pageParams } = await ProductService.getProductsByUser(
+      userId,
+      page,
+      limit,
+      sortBy,
+      sortDirection,
+      params
+    );
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: products,
+      meta: pagination(count, pageParams),
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+const getRelatedProducts = async (req, res) => {
+  let limit = parseInt(req.query.limit) || 10;
+  let { id: productId } = req.params;
+  try {
+    const product = await Product.findByPk(productId);
+
+    if (!product) {
       throw new BadRequestError("Product not found");
     }
+    const categoryId = product.categoryId;
 
-    await Product.destroy({ where: { id } });
+    const products = await ProductService.getRelatedProducts(
+      productId,
+      categoryId,
+      limit
+    );
 
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
     res
-      .status(StatusCodes.OK)
-      .json({ success: true, message: "Product deleted successfully" });
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+const getTopRatedProducts = async (req, res) => {
+  let limit = parseInt(req.query.limit) || 10;
+
+  try {
+    const products = await ProductService.getTopRatedProducts(limit);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+const getPopularProducts = async (req, res) => {
+  let limit = parseInt(req.query.limit) || 10;
+
+  try {
+    const products = await ProductService.getPopularProducts(limit);
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+const getProductsBySearch = async (req, res) => {
+  const { searchQuery } = req.query;
+
+  if (!searchQuery) {
+    throw new BadRequestError("Search query is required");
+  }
+  try {
+    const products = await ProductService.searchProducts(searchQuery);
+
+    for (const product of products) {
+      await incrementPopularity(product.id);
+    }
+
+    res.status(StatusCodes.OK).json({ success: true, data: products });
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -160,4 +276,10 @@ module.exports = {
   getProduct,
   updateProduct,
   deleteProduct,
+  getProductsByCategory,
+  getProductsByUser,
+  getRelatedProducts,
+  getTopRatedProducts,
+  getPopularProducts,
+  getProductsBySearch,
 };

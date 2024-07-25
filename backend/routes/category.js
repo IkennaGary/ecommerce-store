@@ -1,7 +1,7 @@
 const express = require("express");
 const {
   addCategory,
-  getAllCategory,
+  getAllCategories,
   getSingleCategory,
   updateCategory,
   deleteCategory,
@@ -11,7 +11,7 @@ const { authenticateUser, authorizeRoles } = require("../middleware/fullAuth");
 const router = express.Router();
 
 router.post("/", authenticateUser, authorizeRoles("admin"), addCategory);
-router.get("/", getAllCategory);
+router.get("/", getAllCategories);
 router.get("/:id", getSingleCategory);
 router.put(
   "/update/:id",

@@ -1,12 +1,11 @@
 const { StatusCodes } = require("http-status-codes");
 const { signInValidator, signUpValidator } = require("../validators/auth");
-const { User } = require("../models");
-const bcrypt = require("bcryptjs");
-const { createJwt, isTokenValid } = require("../utils/jwt");
-const { BadRequestError, UnauthorizedError } = require("../errors");
+const AuthService = require("../services/AuthService");
+const { createJwt } = require("../utils/jwt");
+const { BadRequestError } = require("../errors");
 
 const signUpUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
   if (!username || !email || !password) {
     throw new BadRequestError("All fields are required");
@@ -19,25 +18,7 @@ const signUpUser = async (req, res) => {
   }
 
   try {
-    const exitingUser = await User.findOne({ where: { email: email } });
-
-    if (exitingUser) {
-      throw new BadRequestError("User already exists");
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const role = req.body?.role ? req.body.role : "user";
-
-    const body = {
-      username,
-      email,
-      password: hashedPassword,
-      role,
-    };
-
-    const user = await User.create(body);
+    const user = await authService.register(username, email, password, role);
 
     const token = createJwt(user);
 
@@ -45,7 +26,7 @@ const signUpUser = async (req, res) => {
       message: "user created successfully",
       username: user.username,
       token,
-      role,
+      role: user.role,
     });
   } catch (error) {
     console.log(error.message);
@@ -69,21 +50,14 @@ const signInUser = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ where: { email } });
-
-    if (!user) {
-      throw new BadRequestError("User not found");
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      throw new UnauthorizedError("Incorrect password");
-    }
+    const user = await AuthService.login(email, password);
     const token = createJwt(user);
 
     res.json({
       message: "User signed in successfully",
       username: user.username,
       token,
+      role: user.role,
     });
   } catch (error) {
     console.log(error.message);
