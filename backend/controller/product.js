@@ -86,12 +86,6 @@ const updateProduct = async (req, res) => {
     throw new BadRequestError("id is required");
   }
 
-  validatorResponse = createProductValidator(data);
-
-  if (validatorResponse !== true) {
-    throw new BadRequestError(validatorResponse[0]?.message);
-  }
-
   try {
     const response = await ProductService.updateProduct(id, data);
 
@@ -235,7 +229,6 @@ const getTopRatedProducts = async (req, res) => {
 
 const getPopularProducts = async (req, res) => {
   let limit = parseInt(req.query.limit) || 10;
-
   try {
     const products = await ProductService.getPopularProducts(limit);
     res.status(StatusCodes.OK).json({
@@ -259,7 +252,7 @@ const getProductsBySearch = async (req, res) => {
     const products = await ProductService.searchProducts(searchQuery);
 
     for (const product of products) {
-      await incrementPopularity(product.id);
+      await ProductService.incrementPopularity(product.id);
     }
 
     res.status(StatusCodes.OK).json({ success: true, data: products });

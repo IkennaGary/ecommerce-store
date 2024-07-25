@@ -22,7 +22,7 @@ const createProductValidator = (body) => {
     rating: { type: "number", min: 0, max: 5, optional: true },
     stock: { type: "number", integer: true, min: 0 },
     capConstruction: { type: "string", optional: true },
-    inches: { type: "integer", optional: true },
+    inches: { type: "number", optional: true },
     tags: { type: "array", items: "string", optional: true },
     brand: { type: "string", min: 3, max: 255 },
     weight: { type: "number", positive: true, optional: true },

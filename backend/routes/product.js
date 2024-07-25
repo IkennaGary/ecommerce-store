@@ -16,26 +16,31 @@ const {
 
 const router = express.Router();
 
-router.post("/", authenticateUser, authorizeRoles("admin"), addProduct);
-router.get("/", getAllProducts);
-router.get("/:id", getProduct);
+router.post("/", authenticateUser, authorizeRoles("admin"), addProduct); // Add product
 router.put(
   "/update/:id",
   authenticateUser,
   authorizeRoles("admin"),
   updateProduct
-);
+); // Update product
 router.delete(
   "/delete/:id",
   authenticateUser,
   authorizeRoles("admin"),
   deleteProduct
-);
-router.get("/category/:categoryId", getProductsByCategory);
-router.get("/user/:userId", getProductsByUser);
-router.get("/related/:id", getRelatedProducts);
-router.get("/top-rated", getTopRatedProducts);
-router.get("/popular", getPopularProducts);
-router.get("/search", getProductsBySearch);
+); // Delete product
 
+// Specific Product Routes
+router.get("/category/:categoryId", getProductsByCategory); // Get products by category
+router.get("/user/:userId", authenticateUser, getProductsByUser); // Get products by user
+
+// Special Product Queries
+router.get("/related/:id", getRelatedProducts); // Get related products
+router.get("/popular", getPopularProducts); // Get popular products
+router.get("/top-rated", getTopRatedProducts); // Get top-rated products
+router.get("/search", getProductsBySearch); // Search products
+
+// General Product Routes
+router.get("/:id", getProduct); // Get a single product by ID
+router.get("/", getAllProducts);
 module.exports = router;

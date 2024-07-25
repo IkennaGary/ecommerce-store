@@ -11,7 +11,7 @@ class ProductService {
       throw new BadRequestError("Invalid category");
     }
 
-    req.body.categoryId = categoryId;
+    data.categoryId = categoryId;
 
     const existingProduct = await Product.findOne({
       where: { title: data.title, categoryId },
@@ -47,6 +47,8 @@ class ProductService {
     }
     delete params.maxPrice;
     delete params.minPrice;
+    delete params.page;
+    delete params.limit;
 
     const products = await Product.findAll({
       limit,
@@ -67,22 +69,23 @@ class ProductService {
   }
 
   async updateProduct(id, data) {
-    const { id: categoryId } = await Category.findOne({
-      where: { name: data.category },
-    });
+    if (data.category) {
+      const { id: categoryId } = await Category.findOne({
+        where: { name: data.category },
+      });
 
-    if (!categoryId) {
-      throw new BadRequestError("Invalid category");
+      if (!categoryId) {
+        throw new BadRequestError("Invalid category");
+      }
+
+      data.categoryId = categoryId;
     }
-
-    data.categoryId = categoryId;
 
     const existingProduct = await Product.findByPk(id);
 
     if (!existingProduct) {
-      throw new BadRequestError("Product not found in this category");
+      throw new BadRequestError("Product doesn't exist");
     }
-
     await Product.update(data, { where: { id } });
 
     return "Product updated successfully";
@@ -107,11 +110,14 @@ class ProductService {
     const pageParams = { limit, page, offset };
     params.id = id;
 
+    delete params.page;
+    delete params.limit;
+
     const products = await Product.findAll({
       limit,
       offset,
       order,
-      where: params,
+      where: { categoryId: params.id },
     });
 
     return { products, pageParams };
@@ -128,6 +134,9 @@ class ProductService {
 
     const pageParams = { limit, page, offset };
     params.userId = userId;
+
+    delete params.page;
+    delete params.limit;
 
     const products = await Product.findAll({
       limit,
@@ -162,7 +171,6 @@ class ProductService {
       limit,
       order: [["popularity", "DESC"]],
     });
-
     return popularProducts;
   }
 
