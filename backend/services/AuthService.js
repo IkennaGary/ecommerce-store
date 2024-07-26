@@ -82,6 +82,15 @@ class AuthService {
 
     return "User email verified";
   }
+
+  async changePassword(email, newPassword) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    await User.update({ password: hashedPassword }, { where: { email } });
+
+    return "Password changed successfully";
+  }
 }
 
 const authService = new AuthService();

@@ -101,9 +101,27 @@ const forgotPasswordVerifyEmail = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const { newPassword, email } = req.body;
+
+  if (!newPassword || !email) {
+    throw new BadRequestError("Email and password required");
+  }
+
+  try {
+    const response = await AuthService.changePassword(email, newPassword);
+    res.status(StatusCodes.OK).json({ success: true, message: response });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
 module.exports = {
   signUpUser,
   signInUser,
   forgotPasswordSendCode,
   forgotPasswordVerifyEmail,
+  changePassword,
 };
