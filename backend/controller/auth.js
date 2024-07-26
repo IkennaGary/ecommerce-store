@@ -67,4 +67,43 @@ const signInUser = async (req, res) => {
   }
 };
 
-module.exports = { signUpUser, signInUser };
+const forgotPasswordSendCode = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    throw new BadRequestError("All fields are required");
+  }
+  try {
+    const response = await AuthService.forgotPasswordSendCode(email);
+    res.status(StatusCodes.OK).json({ success: true, message: response });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+const forgotPasswordVerifyEmail = async (req, res) => {
+  const { code, email } = req.body;
+
+  if (!code || !email) {
+    throw new BadRequestError("All fields are required");
+  }
+
+  try {
+    const response = await AuthService.forgotPasswordVerifyEmail(email, code);
+
+    res.status(StatusCodes.OK).json({ success: true, message: response });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+module.exports = {
+  signUpUser,
+  signInUser,
+  forgotPasswordSendCode,
+  forgotPasswordVerifyEmail,
+};
