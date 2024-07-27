@@ -18,7 +18,7 @@ const signUpUser = async (req, res) => {
   }
 
   try {
-    const user = await authService.register(username, email, password, role);
+    const user = await AuthService.register(username, email, password, role);
 
     const token = createJwt(user);
 

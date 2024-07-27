@@ -10,7 +10,7 @@ const signUpValidator = (body) => {
     role: {
       type: "string",
       default: "user",
-      enum: ["user", "seller", "admin"],
+      enum: ["user", "admin", "seller", "super_admin"],
     },
   };
 
