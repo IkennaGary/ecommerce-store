@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         as: "categories", // would find a suitable name later for this
       });
       Product.belongsTo(models.User, { foreignKey: "userId", as: "user" });
+      Product.hasMany(models.Review, {
+        foreignKey: "productId",
+        as: "reviews",
+      });
     }
   }
   Product.init(

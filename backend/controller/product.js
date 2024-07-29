@@ -227,6 +227,29 @@ const getTopRatedProducts = async (req, res) => {
   }
 };
 
+const getProductReviews = async (req, res) => {
+  const { id: productId } = req.params;
+  if (!productId) {
+    throw new BadRequestError("product Id is required");
+  }
+  try {
+    const product = await Product.findByPk(productId);
+    if (!product) {
+      throw new BadRequestError("Product not found");
+    }
+    const reviews = await ProductService.getProductReviews(productId);
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: reviews,
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
 const getPopularProducts = async (req, res) => {
   let limit = parseInt(req.query.limit) || 10;
   try {
@@ -271,6 +294,7 @@ module.exports = {
   deleteProduct,
   getProductsByCategory,
   getProductsByUser,
+  getProductReviews,
   getRelatedProducts,
   getTopRatedProducts,
   getPopularProducts,

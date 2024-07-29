@@ -12,6 +12,7 @@ const {
   getTopRatedProducts,
   getPopularProducts,
   getProductsBySearch,
+  getProductReviews,
 } = require("../controller/product");
 
 const router = express.Router();
@@ -45,7 +46,10 @@ router.get("/popular", getPopularProducts); // Get popular products
 router.get("/top-rated", getTopRatedProducts); // Get top-rated products
 router.get("/search", getProductsBySearch); // Search products
 
+router.get("/reviews/:id", getProductReviews); // Get product reviews
+
 // General Product Routes
 router.get("/:id", getProduct); // Get a single product by ID
 router.get("/", getAllProducts);
+
 module.exports = router;

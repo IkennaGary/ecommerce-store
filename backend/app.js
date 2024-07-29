@@ -14,11 +14,13 @@ const postCategoryRouter = require("./routes/posts/postCategory");
 const postRouter = require("./routes/posts/post");
 const commentRouter = require("./routes/posts/comment");
 const likeDislikeRouter = require("./routes/posts/likeDislike");
+const reviewRouter = require("./routes/review");
 
 app.use("/api/auth", authRouter);
 app.use("/api/upload", imageUploadRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/product", productRouter);
+app.use("/api/review", reviewRouter);
 //blog routes
 app.use("/api/blog/category", postCategoryRouter);
 app.use("/api/blog", postRouter);

@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
-const { BadRequestError, UnauthorizedError } = require("../errors");
-const { Product, Category, User } = require("../models");
+const { BadRequestError } = require("../errors");
+const { Product, Category, User, Review } = require("../models");
 
 class ProductService {
   async addProduct(data) {
@@ -55,13 +55,42 @@ class ProductService {
       offset,
       order,
       where: params,
+      include: [
+        {
+          model: Review,
+          as: "reviews",
+          attributes: ["id", "rating", "comment", "createdAt"],
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["id", "username", "email"],
+            },
+          ],
+        },
+      ],
     });
 
     return { products, pageParams };
   }
 
   async getProduct(id) {
-    const response = await Product.findByPk(id);
+    const response = await Product.findByPk(id, {
+      include: [
+        {
+          model: Review,
+          as: "reviews",
+          attributes: ["id", "rating", "comment", "createdAt"],
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["id", "username", "email"],
+            },
+          ],
+        },
+      ],
+    });
     if (!response) {
       throw new BadRequestError("Product not found");
     }
@@ -155,6 +184,21 @@ class ProductService {
     });
 
     return relatedProducts;
+  }
+
+  async getProductReviews(productId) {
+    const reviews = await Review.findAll({
+      where: { productId },
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "username", "email"],
+        },
+      ],
+    });
+
+    return reviews;
   }
 
   async getTopRatedProducts(limit) {
