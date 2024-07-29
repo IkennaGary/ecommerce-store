@@ -9,16 +9,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      LikeDislike.belongsTo(models.Post, { foreignKey: "postId", as: "post" });
     }
   }
   LikeDislike.init(
     {
-      type: {
-        type: DataTypes.ENUM("like", "dislike"),
-      },
-      allowNull: false,
-      postId: DataTypes.INTEGER,
       userId: DataTypes.INTEGER,
+      postId: DataTypes.INTEGER,
+      isLike: DataTypes.BOOLEAN,
     },
     {
       sequelize,

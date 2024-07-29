@@ -9,6 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Post.belongsTo(models.BlogCategory, {
+        foreignKey: "categoryId",
+        as: "categories",
+      });
+      Post.hasMany(models.Comment, { foreignKey: "postId", as: "comments" });
+      Post.belongsTo(models.User, { foreignKey: "authorId", as: "author" });
+      Post.hasMany(models.LikeDislike, { foreignKey: "postId", as: "likes" });
     }
   }
   Post.init(
@@ -29,10 +36,19 @@ module.exports = (sequelize, DataTypes) => {
           len: [10, 5000],
         },
       },
+      thumbnail: DataTypes.STRING,
+      category: DataTypes.STRING,
       authorId: DataTypes.INTEGER,
-      views: DataTypes.INTEGER,
+      categoryId: DataTypes.INTEGER,
+      views: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
       tags: DataTypes.JSON,
-      isPublished: DataTypes.BOOLEAN,
+      isPublished: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
       publishedAt: DataTypes.DATE,
     },
     {

@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
-const { BadRequestError } = require("../errors");
-const { BlogCategory, Post } = require("../models");
-const CategoryService = require("../services/CategoryService");
+const { BadRequestError } = require("../../errors");
+const { BlogCategory, Post } = require("../../models");
+const CategoryService = require("../../services/CategoryService");
 
 const addCategory = async (req, res) => {
   const { name } = req.body;
@@ -49,7 +49,7 @@ const getSingleCategory = async (req, res) => {
     throw new BadRequestError("id is required");
   }
   try {
-    const response = await Category.findByPk(id, {
+    const response = await BlogCategory.findByPk(id, {
       include: [{ model: Post, as: "posts" }],
     });
 
@@ -79,7 +79,7 @@ const updateCategory = async (req, res) => {
       throw new BadRequestError("Category not found");
     }
 
-    await BlogCategory.update(updatedData, { where: { id } });
+    await BlogCategory.update(req.body, { where: { id } });
     res.status(StatusCodes.OK).json({
       success: true,
       message: "Category updated successfully",
@@ -102,7 +102,7 @@ const deleteCategory = async (req, res) => {
     if (!isExisting) {
       throw new BadRequestError("Category not found");
     }
-    await Category.destroy({ where: { id } });
+    await BlogCategory.destroy({ where: { id } });
 
     res.status(StatusCodes.OK).json({
       success: true,

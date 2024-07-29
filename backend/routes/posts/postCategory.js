@@ -5,8 +5,11 @@ const {
   getSingleCategory,
   updateCategory,
   deleteCategory,
-} = require("../controller/category");
-const { authenticateUser, authorizeRoles } = require("../middleware/fullAuth");
+} = require("../../controller/posts/postCategory");
+const {
+  authenticateUser,
+  authorizeRoles,
+} = require("../../middleware/fullAuth");
 
 const router = express.Router();
 
@@ -16,8 +19,18 @@ router.post(
   authorizeRoles("admin", "super_admin"),
   addCategory
 );
-router.get("/", getAllCategories);
-router.get("/:id", getSingleCategory);
+router.get(
+  "/",
+  authenticateUser,
+  authorizeRoles("admin", "super_admin"),
+  getAllCategories
+);
+router.get(
+  "/:id",
+  authenticateUser,
+  authorizeRoles("admin", "super_admin"),
+  getSingleCategory
+);
 router.put(
   "/update/:id",
   authenticateUser,

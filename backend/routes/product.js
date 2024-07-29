@@ -16,17 +16,22 @@ const {
 
 const router = express.Router();
 
-router.post("/", authenticateUser, authorizeRoles("admin"), addProduct); // Add product
+router.post(
+  "/",
+  authenticateUser,
+  authorizeRoles("admin", "super_admin"),
+  addProduct
+); // Add product
 router.put(
   "/update/:id",
   authenticateUser,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "super_admin"),
   updateProduct
 ); // Update product
 router.delete(
   "/delete/:id",
   authenticateUser,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "super_admin"),
   deleteProduct
 ); // Delete product
 
