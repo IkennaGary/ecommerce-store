@@ -17,6 +17,7 @@ const likeDislikeRouter = require("./routes/posts/likeDislike");
 const reviewRouter = require("./routes/review");
 const cartRouter = require("./routes/cart");
 const wishlistRouter = require("./routes/wishlist");
+const shippingInfoRouter = require("./routes/shippingInfo");
 
 app.use("/api/auth", authRouter);
 app.use("/api/upload", imageUploadRouter);
@@ -30,6 +31,8 @@ app.use("/api/blog/category", postCategoryRouter);
 app.use("/api/blog", postRouter);
 app.use("/api/blog/comment", commentRouter);
 app.use("/api/blog/likeDislike", likeDislikeRouter);
+//Shipping Information routes
+app.use("/api/shipping", shippingInfoRouter);
 
 // Not Found Middleware
 const notFoundMiddleware = require("./middleware/notFound");
