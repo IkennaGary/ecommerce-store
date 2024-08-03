@@ -19,6 +19,7 @@ const cartRouter = require("./routes/cart");
 const wishlistRouter = require("./routes/wishlist");
 const shippingInfoRouter = require("./routes/shippingInfo");
 const paymentMethodRouter = require("./routes/PaymentMethod");
+const orderRouter = require("./routes/order");
 
 //user routes
 app.use("/api/auth", authRouter);
@@ -38,6 +39,7 @@ app.use("/api/blog/likeDislike", likeDislikeRouter);
 //Shipping Information routes
 app.use("/api/shipping", shippingInfoRouter);
 //Order routes
+app.use("/api/order", orderRouter);
 app.use("/api/payment-method", paymentMethodRouter);
 
 // Not Found Middleware
