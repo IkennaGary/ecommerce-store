@@ -1,0 +1,31 @@
+/* src/fonts.css */
+
+@font-face {
+    font-family: 'Switzer';
+    src: url('./assets/fonts//Switzer-Regular.ttf') format('truetype');
+    font-weight: lighter;
+    font-style:normal;
+  }
+  
+  @font-face {
+    font-family: 'SwitzerBold';
+    src: url('./assets/fonts/Switzer-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'SwitzerExtraBold';
+    src: url('./assets/fonts/Switzer-Extrabold.ttf') format('truetype');
+    font-weight:bolder;
+    font-style: normal;
+  } 
+  
+  
+  @font-face {
+    font-family: 'SwitzerNormal';
+    src: url('./assets/fonts/Switzer-Medium.ttf') format('truetype');
+    font-weight:normal;
+    font-style: normal;
+  }
+  
