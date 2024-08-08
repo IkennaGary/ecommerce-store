@@ -1,7 +1,7 @@
 // src/CodeInput.js
 import React, { useRef, useState } from "react";
 
-const CodeInput = ({ length, onComplete }) => {
+const CodeInput = ({ length, onComplete, setIsDisabled }) => {
   const [code, setCode] = useState(new Array(length).fill(""));
   const inputRefs = useRef([]);
 
@@ -22,6 +22,9 @@ const CodeInput = ({ length, onComplete }) => {
       // Trigger onComplete if all fields are filled
       if (newCode.every((char) => char !== "")) {
         onComplete(newCode.join(""));
+        setIsDisabled(false);
+      } else {
+        setIsDisabled(true);
       }
     }
   };
@@ -54,7 +57,7 @@ const CodeInput = ({ length, onComplete }) => {
   };
 
   return (
-    <div className="flex space-x-2">
+    <div className="flex space-x-2 justify-between">
       {code.map((_, index) => (
         <input
           key={index}

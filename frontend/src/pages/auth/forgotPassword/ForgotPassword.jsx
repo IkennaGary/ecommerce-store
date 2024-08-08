@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Send email with verification code
     toast.success("Code has been sent to your email");
     // Redirect to verify code page
-    Navigate("/verify-code");
+    navigate(`/verify-code/${email}`);
   };
   return (
     <div className="w-full h-screen bg-contain flex justify-end md:p-3 md:bg-[url('assets/images/authBg.jpg')]">
@@ -46,7 +47,7 @@ const ForgotPassword = () => {
           <div>
             <p className="mt-5 text-green-800 font-light text-xs">
               <span className="text-green-800 font-subHeading2">
-                <Link to="/login">Back to log in</Link>
+                <Link to="/">Back to log in</Link>
               </span>
             </p>
           </div>

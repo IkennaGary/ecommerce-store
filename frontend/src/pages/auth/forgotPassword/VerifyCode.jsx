@@ -1,13 +1,29 @@
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import CodeInput from "../../../components/CodeInput";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import CountdownTimer from "../../../utils/CountdownTImer";
+import toast from "react-hot-toast";
 
 const VerifyCode = () => {
   const [isDisabled, setIsDisabled] = useState(true);
   const [code, setCode] = useState("");
+  const [isCountingdown, setIsCountingdown] = useState(true);
+  const navigate = useNavigate();
+  const { email } = useParams();
+
   const handleComplete = (code) => {
     setCode(code);
-    setIsDisabled(false);
+  };
+
+  const handleResendCode = () => {
+    setIsCountingdown(true);
+    toast.success(`Verification code sent to ${email}`);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    navigate(`/change-password/${email}`);
   };
 
   return (
@@ -22,30 +38,47 @@ const VerifyCode = () => {
               Input the verification code sent to your email address
             </p>
           </div>
-          <form className="w-full">
+          <form className="w-full" onSubmit={handleSubmit}>
             <div className="w-full">
-              <CodeInput length={6} onComplete={handleComplete} />
+              <CodeInput
+                length={6}
+                onComplete={handleComplete}
+                setIsDisabled={setIsDisabled}
+              />
+            </div>
+            <div className=" text-right mt-3 text-gray-800 font-subHeading2">
+              <span className="font-light text-xs">
+                {isCountingdown ? (
+                  "Resend code in"
+                ) : (
+                  <button
+                    className="text-secondary font-subHeading2"
+                    onClick={handleResendCode}
+                  >
+                    Resend code
+                  </button>
+                )}
+              </span>{" "}
+              {isCountingdown && (
+                <CountdownTimer
+                  initialMinutes={1}
+                  initialSeconds={0}
+                  setIsCountingdown={setIsCountingdown}
+                />
+              )}
             </div>
             <button
               type="submit"
               disabled={isDisabled}
-              className="mt-5 w-full h-10 bg-secondary flex justify-center items-center rounded-full text-background text-sm disabled:bg-orange-300 disabled:cursor-auto"
+              className="mt-5 w-full h-10 bg-secondary flex justify-center items-center rounded-full text-background text-sm disabled:bg-orange-200 disabled:cursor-auto"
             >
               Continue
             </button>
           </form>
           <div>
             <p className="mt-5 text-green-800 font-light text-xs">
-              Didn't receive email?{" "}
-              <span className="text-secondary font-subHeading2">
-                Click here
-              </span>
-            </p>
-          </div>
-          <div>
-            <p className="mt-5 text-green-800 font-light text-xs">
               <span className="text-green-800 font-subHeading2">
-                <Link to="/login">Back to log in</Link>
+                <Link to="/">Back to log in</Link>
               </span>
             </p>
           </div>

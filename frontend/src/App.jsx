@@ -2,10 +2,11 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Suspense, lazy, useState } from "react";
 import DashboardLayout from "./layouts/DashboardLayout";
-import SignUpPage from "./pages/auth/signup";
 import LoginPage from "./pages/auth/signin";
 import ForgotPassword from "./pages/auth/forgotPassword/ForgotPassword";
 import VerifyCode from "./pages/auth/forgotPassword/VerifyCode";
+import ChangePassword from "./pages/auth/forgotPassword/ChangePassword";
+import RecoverySuccess from "./pages/auth/forgotPassword/RecoverySuccess";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -19,10 +20,11 @@ function App() {
     <>
       <Suspense>
         <Routes>
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verify-code" element={<VerifyCode />} />
+          <Route path="/verify-code/:email" element={<VerifyCode />} />
+          <Route path="/change-password/:email" element={<ChangePassword />} />
+          <Route path="/recovery-success" element={<RecoverySuccess />} />
           <Route
             element={
               <DashboardLayout
@@ -31,7 +33,11 @@ function App() {
               />
             }
           >
-            <Route exact path="/" element={<Navigate to="/dashboard" />} />
+            <Route
+              exact
+              path="/dashboard"
+              element={<Navigate to="/dashboard" />}
+            />
             {/* <Route path="/dashboard" element={lazy(() => import("./pages/Dashboard"))} />
             <Route path="/products" element={lazy(() => import("./pages/Products"))} />
             <Route path="/posts" element={lazy(() => import("./pages/Posts"))} />
