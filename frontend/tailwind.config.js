@@ -11,6 +11,10 @@ export default {
         },
         secondary: "#F65A11",
         background: "#EFEDE7",
+        darkBackground: {
+          DEFAULT: "#464950",
+          light: "#464950",
+        },
       },
       fontFamily: {
         body: ["Switzer"],

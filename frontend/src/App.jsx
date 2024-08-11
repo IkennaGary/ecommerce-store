@@ -9,6 +9,7 @@ import ChangePassword from "./pages/auth/forgotPassword/ChangePassword";
 import RecoverySuccess from "./pages/auth/forgotPassword/RecoverySuccess";
 import Authenticated from "./components/PrivateRoute/Authenticated";
 import UserService from "./services/UserService";
+import OrderManagement from "./pages/orderManagement";
 import { useDispatch } from "react-redux";
 import { setUser } from "./store/reducers/auth.reducer";
 
@@ -18,8 +19,8 @@ function App() {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
-    document.body.classList.toggle("dark", darkMode);
-    // localStorage.setItem('darkMode', darkMode)
+
+    localStorage.setItem("darkMode", darkMode);
   };
 
   useEffect(() => {
@@ -44,6 +45,11 @@ function App() {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    const darkMode = localStorage.getItem("darkMode");
+    document.body.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
   return (
     <>
       <Suspense>
@@ -67,8 +73,8 @@ function App() {
                 path="/dashboard"
                 element={<Navigate to="/dashboard" />}
               />
+              <Route path="/orders" element={<OrderManagement />} />
               {/* <Route path="/dashboard" element={lazy(() => import("./pages/Dashboard"))} />
-            <Route path="/products" element={lazy(() => import("./pages/Products"))} />
             <Route path="/posts" element={lazy(() => import("./pages/Posts"))} />
             <Route path="/customers" element={lazy(() => import("./pages/Customers"))} /> */}
               <Route path="*" element={<Navigate to="/dashboard" />} />

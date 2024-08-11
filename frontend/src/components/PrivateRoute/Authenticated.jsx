@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
+import BaseLoader from "../Loaders/BaseLoader";
 
 const Authenticated = () => {
   const user = useSelector((state) => state.user);
@@ -9,11 +10,11 @@ const Authenticated = () => {
     localStorage.getItem("token") &&
     !user?.isAuthenticated
   ) {
-    return <div>Loading 123.....</div>;
+    return <BaseLoader />;
   }
 
   if (user?.isLoading) {
-    return <div>BaseLoader....</div>;
+    return <BaseLoader />;
   } else if (!user?.isAuthenticated) {
     return <Navigate to="/" />;
   } else {
