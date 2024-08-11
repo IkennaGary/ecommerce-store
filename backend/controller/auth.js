@@ -86,9 +86,12 @@ const signInAdminUser = async (req, res) => {
 
     res.status(StatusCodes.OK).json({
       message: "User signed in successfully",
-      username: user.username,
-      token,
-      role: user.role,
+      data: {
+        username: user.username,
+        email: user.email,
+        token,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.log(error.message);

@@ -14,8 +14,8 @@ export const loginUser = createAsyncThunk(
   async (formData, thunkAPI) => {
     try {
       const res = await AuthService.login(formData);
-      localStorage.setItem("token", res.data.token);
-      return res.data;
+      localStorage.setItem("token", res.data.data.token);
+      return res.data.data;
     } catch (error) {
       const message =
         (error.response &&
@@ -32,7 +32,16 @@ export const loginUser = createAsyncThunk(
 const loginSlice = createSlice({
   name: "login",
   initialState,
-  reducers: {},
+  reducers: {
+    setUser: (state, action) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+    },
+    clearUser: (state, action) => {
+      state.user = {};
+      state.isAuthenticated = false;
+    },
+  },
   extraReducers: (builder) => {
     ///////// LOGIN USER /////////////////////
     builder
@@ -50,5 +59,5 @@ const loginSlice = createSlice({
       });
   },
 });
-
+export const { setUser, clearUser } = loginSlice.actions;
 export default loginSlice.reducer;

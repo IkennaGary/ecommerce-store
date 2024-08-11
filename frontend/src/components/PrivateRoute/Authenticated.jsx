@@ -4,8 +4,6 @@ import { useSelector } from "react-redux";
 const Authenticated = () => {
   const user = useSelector((state) => state.user);
 
-  console.log("SSSSS", user);
-
   if (
     !user?.isLoading &&
     localStorage.getItem("token") &&

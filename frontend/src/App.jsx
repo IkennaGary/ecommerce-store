@@ -10,6 +10,7 @@ import RecoverySuccess from "./pages/auth/forgotPassword/RecoverySuccess";
 import Authenticated from "./components/PrivateRoute/Authenticated";
 import UserService from "./services/UserService";
 import { useSelector, useDispatch } from "react-redux";
+import { setUser } from "./store/reducers/auth.reducer";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -23,16 +24,27 @@ function App() {
   };
 
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await UserService.getCurrentUser();
-      console.log("{{}{}DATA", data);
-    };
-    fetch();
-  }, []);
+    const token = localStorage.getItem("token");
+    if (token) {
+      const fetch = async () => {
+        try {
+          const { data } = await UserService.getCurrentUser();
+          dispatch(
+            setUser({
+              email: data.email,
+              role: data.role,
+              token,
+              username: data.username,
+            })
+          );
+        } catch (error) {
+          console.log(error.message);
+        }
+      };
+      fetch();
+    }
+  }, [dispatch]);
 
-  useEffect(() => {
-    console.log("////USEFFECTV", user);
-  }, [user]);
   return (
     <>
       <Suspense>

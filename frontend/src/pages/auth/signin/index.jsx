@@ -25,22 +25,20 @@ const LoginPage = () => {
       dispatch(loginUser(formData));
 
       if (isAuthenticated) {
+        toast.success("Logged in successfully");
         navigate("/dashboard");
       }
-      //  else {
-      //   toast.error(errorMessage);
-      // }
     } catch (error) {
       toast.error(errorMessage);
       console.log(error.message);
     }
   };
 
-  //   useEffect(() => {
-  //     if (localStorage.getItem("token")) {
-  //       navigate("/dashboard");
-  //     }
-  //   }, []);
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="w-full h-screen bg-contain flex justify-end md:p-3 md:bg-[url('assets/images/authBg.jpg')]">

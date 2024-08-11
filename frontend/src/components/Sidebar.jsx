@@ -1,7 +1,18 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { clearUser } from "../store/reducers/auth.reducer";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 
 const Sidebar = ({ toggleDarkMode, darkMode }) => {
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    dispatch(clearUser());
+    toast.success("Logged out successfully");
+  };
+
   const activeStyle =
     "text-gray-100 border-l-4  border-secondary transition ease-linear duration:75 hover:text-secondary";
   const notActiveStyle =
@@ -263,7 +274,7 @@ const Sidebar = ({ toggleDarkMode, darkMode }) => {
           </li>
           <li className="flex items-center text-gray-200 text-sm gap-3 pl-4 pr-4">
             Logout
-            <div className="cursor-pointer">
+            <div className="cursor-pointer" onClick={handleLogout}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
