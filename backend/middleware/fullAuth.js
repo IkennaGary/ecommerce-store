@@ -1,13 +1,18 @@
 const { isTokenValid } = require("../utils/jwt");
 const { UnauthorizedError, UnauthenticatedError } = require("../errors");
+const { StatusCodes } = require("http-status-codes");
 
 const authenticateUser = (req, res, next) => {
   if (!req.headers.authorization) {
-    throw new UnauthenticatedError("Access denied. No token provided");
+    res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ messsage: "Access denied. No token provided" });
   }
   const token = req.headers.authorization.split(" ")[1];
   if (!token) {
-    throw new UnauthenticatedError("Access denied. No token provided");
+    res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ messsage: "Access denied. No token provided" });
   }
   try {
     if (token) {
@@ -21,13 +26,14 @@ const authenticateUser = (req, res, next) => {
       next();
     }
   } catch (error) {
-    throw new UnauthenticatedError("Invalid token");
+    res.status(StatusCodes.UNAUTHORIZED).json({ messsage: "Invalid token" });
   }
 };
 
 const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
+      res.status(StatusCodes.UNAUTHORIZED).json({ messsage: "Invalid token" });
       throw new UnauthorizedError(
         "Access denied. You don't have sufficient permissions"
       );

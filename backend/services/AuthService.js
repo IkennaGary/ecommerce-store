@@ -42,6 +42,24 @@ class AuthService {
 
     return user;
   }
+  async adminLogin(email, password) {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      throw new BadRequestError("User not found");
+    }
+    console.log(user.role);
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new UnauthorizedError("Incorrect password");
+    }
+
+    if (user.role === "admin" || user.role === "super_admin") {
+      return user;
+    } else {
+      throw new UnauthorizedError("User is not an admin");
+    }
+  }
 
   async forgotPasswordSendCode(email) {
     const user = await User.findOne({ where: { email } });

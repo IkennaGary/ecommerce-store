@@ -14,6 +14,7 @@ app.use(xss());
 
 // Routes
 const authRouter = require("./routes/auth");
+const userRouter = require("./routes/user");
 const imageUploadRouter = require("./routes/imageUpload");
 const categoryRouter = require("./routes/category");
 const productRouter = require("./routes/product");
@@ -28,8 +29,10 @@ const shippingInfoRouter = require("./routes/shippingInfo");
 const paymentMethodRouter = require("./routes/PaymentMethod");
 const orderRouter = require("./routes/order");
 
-//user routes
+//auth routes
 app.use("/api/auth", authRouter);
+//user routes
+app.use("/api/user", userRouter);
 //image upload routes
 app.use("/api/upload", imageUploadRouter);
 //product routes

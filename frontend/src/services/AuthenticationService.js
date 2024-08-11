@@ -2,7 +2,7 @@ import Api from "./Api";
 
 const Services = {
   login(formData) {
-    return Api().post("/auth/signin", formData);
+    return Api().post("/auth/signin/admin", formData);
   },
   requestForgotPasswordCode(formData) {
     return Api().post("/auth/forgetPassword/send-code", formData);

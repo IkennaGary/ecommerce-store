@@ -14,7 +14,7 @@ const signUpUser = async (req, res) => {
   validatorResponse = signUpValidator(req.body);
 
   if (validatorResponse !== true) {
-    throw new BadRequestError(validatorResponse[0]?.message);
+    return res.status(400).json({ message: validatorResponse[0]?.message });
   }
 
   try {
@@ -46,14 +46,45 @@ const signInUser = async (req, res) => {
   validatorResponse = signInValidator(req.body);
 
   if (validatorResponse !== true) {
-    throw new BadRequestError(validatorResponse[0]?.message);
+    return res.status(400).json({ message: validatorResponse[0]?.message });
   }
 
   try {
     const user = await AuthService.login(email, password);
     const token = createJwt(user);
 
-    res.json({
+    res.status(StatusCodes.OK).json({
+      message: "User signed in successfully",
+      username: user.username,
+      token,
+      role: user.role,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+const signInAdminUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new BadRequestError("All fields are required");
+  }
+
+  validatorResponse = signInValidator(req.body);
+
+  if (validatorResponse !== true) {
+    return res.status(400).json({ message: validatorResponse[0]?.message });
+  }
+
+  try {
+    const user = await AuthService.adminLogin(email, password);
+    const token = createJwt(user);
+
+    res.status(StatusCodes.OK).json({
       message: "User signed in successfully",
       username: user.username,
       token,
@@ -121,6 +152,7 @@ const changePassword = async (req, res) => {
 module.exports = {
   signUpUser,
   signInUser,
+  signInAdminUser,
   forgotPasswordSendCode,
   forgotPasswordVerifyEmail,
   changePassword,

@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import AuthService from "../../services/AuthenticationService";
+import toast from "react-hot-toast";
 
 const initialState = {
   user: [],
+  isAuthenticated: false,
   isLoading: false,
   errorMessage: null,
 };
@@ -12,6 +14,7 @@ export const loginUser = createAsyncThunk(
   async (formData, thunkAPI) => {
     try {
       const res = await AuthService.login(formData);
+      localStorage.setItem("token", res.data.token);
       return res.data;
     } catch (error) {
       const message =
@@ -20,6 +23,7 @@ export const loginUser = createAsyncThunk(
           error.response.data.message) ||
         error.message ||
         error.toString();
+      toast.error(message);
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -38,6 +42,7 @@ const loginSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
+        state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;

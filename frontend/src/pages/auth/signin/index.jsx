@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../../store/reducers/auth.reducer";
 
@@ -8,8 +8,11 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordType, setPasswordType] = useState("password");
-  const { user } = useSelector((state) => state.user);
+  const { user, isAuthenticated, errorMessage } = useSelector(
+    (state) => state.user
+  );
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,12 +21,26 @@ const LoginPage = () => {
       email,
       password,
     };
-    dispatch(loginUser(formData));
+    try {
+      dispatch(loginUser(formData));
+
+      if (isAuthenticated) {
+        navigate("/dashboard");
+      }
+      //  else {
+      //   toast.error(errorMessage);
+      // }
+    } catch (error) {
+      toast.error(errorMessage);
+      console.log(error.message);
+    }
   };
 
-  useEffect(() => {
-    console.log("////////", user);
-  }, [user]);
+  //   useEffect(() => {
+  //     if (localStorage.getItem("token")) {
+  //       navigate("/dashboard");
+  //     }
+  //   }, []);
 
   return (
     <div className="w-full h-screen bg-contain flex justify-end md:p-3 md:bg-[url('assets/images/authBg.jpg')]">
