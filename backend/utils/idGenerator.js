@@ -1,4 +1,4 @@
-const { v6, v4 } = require("uuid");
+const { v4 } = require("uuid");
 
 const generateSku = () => {
   const prefix = "SKU_";
@@ -7,7 +7,7 @@ const generateSku = () => {
 };
 
 const generateforgotPasswordCode = () => {
-  return v6().toString().toUpperCase().substring(0, 4);
+  return v4().toString().toUpperCase().substring(0, 6);
 };
 
 module.exports = { generateSku, generateforgotPasswordCode };

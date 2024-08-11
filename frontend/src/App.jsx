@@ -9,12 +9,11 @@ import ChangePassword from "./pages/auth/forgotPassword/ChangePassword";
 import RecoverySuccess from "./pages/auth/forgotPassword/RecoverySuccess";
 import Authenticated from "./components/PrivateRoute/Authenticated";
 import UserService from "./services/UserService";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setUser } from "./store/reducers/auth.reducer";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
-  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const toggleDarkMode = () => {

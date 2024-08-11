@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import AuthenticationService from "../../../services/AuthenticationService";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -8,10 +9,16 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Send email with verification code
-    toast.success("Code has been sent to your email");
-    // Redirect to verify code page
-    navigate(`/verify-code/${email}`);
+    try {
+      await AuthenticationService.requestForgotPasswordCode({
+        email,
+      });
+      toast.success("Code has been sent to your email");
+      navigate(`/verify-code/${email}`);
+    } catch (error) {
+      toast.error(error.response.data.error);
+      console.log(error.response.data.error);
+    }
   };
   return (
     <div className="w-full h-screen bg-contain flex justify-end md:p-3 md:bg-[url('assets/images/authBg.jpg')]">

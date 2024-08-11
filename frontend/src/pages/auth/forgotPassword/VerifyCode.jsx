@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import CodeInput from "../../../components/CodeInput";
 import CountdownTimer from "../../../utils/CountdownTImer";
 import toast from "react-hot-toast";
+import AuthenticationService from "../../../services/AuthenticationService";
 
 const VerifyCode = () => {
   const [isDisabled, setIsDisabled] = useState(true);
@@ -15,15 +16,29 @@ const VerifyCode = () => {
     setCode(code);
   };
 
-  const handleResendCode = () => {
+  const handleResendCode = async () => {
     setIsCountingdown(true);
-    toast.success(`Verification code sent to ${email}`);
+    try {
+      await AuthenticationService.requestForgotPasswordCode({
+        email,
+      });
+      toast.success(`Verification code resent to ${email}`);
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error.message);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    navigate(`/change-password/${email}`);
+    try {
+      await AuthenticationService.verifyForgotPasswordCode({ code, email });
+      toast.success("email verified");
+      navigate(`/change-password/${email}`);
+    } catch (error) {
+      toast.error(error.response.data.error);
+      console.log(error.response.data.error);
+    }
   };
 
   return (

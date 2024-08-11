@@ -10,23 +10,23 @@ const CodeInput = ({ length, onComplete, setIsDisabled }) => {
     const newCode = [...code];
 
     // Ensure only digits are allowed
-    if (/^[0-9]?$/.test(value)) {
-      newCode[index] = value;
-      setCode(newCode);
+    newCode[index] = value;
+    setCode(newCode);
 
-      // Move to next input field if value is entered
-      if (value && index < length - 1) {
-        inputRefs.current[index + 1].focus();
-      }
-
-      // Trigger onComplete if all fields are filled
-      if (newCode.every((char) => char !== "")) {
-        onComplete(newCode.join(""));
-        setIsDisabled(false);
-      } else {
-        setIsDisabled(true);
-      }
+    // Move to next input field if value is entered
+    if (value && index < length - 1) {
+      inputRefs.current[index + 1].focus();
     }
+
+    // Trigger onComplete if all fields are filled
+    if (newCode.every((char) => char !== "")) {
+      onComplete(newCode.join(""));
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
+    // if (/^[0-9]?$/.test(value)) {
+    // }
   };
 
   const handlePaste = (e) => {
@@ -47,6 +47,7 @@ const CodeInput = ({ length, onComplete, setIsDisabled }) => {
     // Move focus to last field and trigger onComplete if all fields are filled
     if (newCode.length === length) {
       onComplete(newCode.join(""));
+      setIsDisabled(false);
     }
   };
 

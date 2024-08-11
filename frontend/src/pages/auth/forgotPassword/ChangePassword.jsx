@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import AuthenticationService from "../../../services/AuthenticationService";
 
 const ChangePassword = () => {
   const [password, setPassword] = useState("");
@@ -10,7 +11,7 @@ const ChangePassword = () => {
   const navigate = useNavigate();
   const { email } = useParams();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -21,7 +22,13 @@ const ChangePassword = () => {
       newPassword: password,
       email,
     };
-    navigate("/recovery-success");
+    try {
+      await AuthenticationService.changePassword(formData);
+      navigate("/recovery-success");
+    } catch (error) {
+      toast.error(error.response.data.error);
+      console.log(error.response.data.error);
+    }
   };
 
   return (
