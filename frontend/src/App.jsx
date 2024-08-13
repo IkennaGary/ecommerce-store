@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { Suspense, lazy, useState, useEffect } from "react";
 import DashboardLayout from "./layouts/DashboardLayout";
 import LoginPage from "./pages/auth/signin";
@@ -46,7 +46,6 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    const darkMode = localStorage.getItem("darkMode");
     document.body.classList.toggle("dark", darkMode);
   }, [darkMode]);
 
